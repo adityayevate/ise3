@@ -2,17 +2,17 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3'
+        maven 'maven_3_5_0'
     }
 
     environment {
-        DOCKER_IMAGE = "sakshishelake/dockerapp:latest"
+        DOCKER_IMAGE = "adityayevate/dockerapp:latest"
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/Shelake04/ISE3'
+                git branch: 'main', url: 'https://github.com/adityayevate/ise3'
             }
         }
 
@@ -30,9 +30,9 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: '7bab7d88-7142-42e7-9ce6-ecc8593bf249', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: dockerhub-login, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat """
-                        echo %DOCKER_PASS% | docker login --username sakshishelake --password-stdin
+                        echo %DOCKER_PASS% | docker login --username adityayevate --password-stdin
                         docker push %DOCKER_IMAGE%
                     """
                 }
