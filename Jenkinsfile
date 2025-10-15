@@ -17,6 +17,16 @@ pipeline {
             }
         }
 
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    bat """
+                        echo %DOCKER_PASS% | docker login --username %DOCKER_USER% --password-stdin
+                    """
+                }
+            }
+        }
+
         stage('Build Java Application') {
             steps {
                 bat 'mvn -B clean package -DskipTests'
@@ -31,12 +41,7 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat """
-                        echo %DOCKER_PASS% | docker login --username %DOCKER_USER% --password-stdin
-                        docker push %DOCKER_IMAGE%
-                    """
-                }
+                bat "docker push %DOCKER_IMAGE%"
             }
         }
     }
