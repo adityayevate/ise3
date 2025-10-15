@@ -10,6 +10,7 @@ pipeline {
     }
 
     stages {
+
         stage('Clone Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/adityayevate/ise3'
@@ -32,7 +33,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat """
-                        echo %DOCKER_PASS% | docker login --username adityayevate --password-stdin
+                        echo %DOCKER_PASS% | docker login --username %DOCKER_USER% --password-stdin
                         docker push %DOCKER_IMAGE%
                     """
                 }
